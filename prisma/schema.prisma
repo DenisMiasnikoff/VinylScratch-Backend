@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String     @id @default(cuid())
+  username  String     @unique
+  email     String     @unique
+  password  String
+  createdAt DateTime   @default(now())
+  songs     Song[]
+  playlists Playlist[]
+  favorites Favorite[]
+}
+
+model Song {
+  id        String         @id @default(cuid())
+  title     String
+  artist    String?
+  duration  Int?
+  fileUrl   String
+  userId    String
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  playlists PlaylistSong[]
+  favorites Favorite[]
+  createdAt DateTime       @default(now())
+}
+
+model Playlist {
+  id        String         @id @default(cuid())
+  name      String
+  userId    String
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  songs     PlaylistSong[]
+  createdAt DateTime       @default(now())
+}
+
+model PlaylistSong {
+  playlistId String
+  songId     String
+  playlist   Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  song       Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+  addedAt    DateTime @default(now())
+
+  @@id([playlistId, songId])
+}
+
+model Favorite {
+  userId    String
+  songId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  song      Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@id([userId, songId])
+}
