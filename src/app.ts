@@ -3,7 +3,9 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
 import authRoutes from './routes/authRoutes';
-
+import songRoutes from './routes/songRoutes';
+import playlistRoutes from "./routes/playlistRoutes";
+import favoriteRoutes from "./routes/favoriteRoutes";
 const app = express();
 
 const globalLimiter = rateLimit({
@@ -36,5 +38,8 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/songs', songRoutes);
+app.use('/api/v1/playlists', playlistRoutes);
+app.use('/api/v1/favorites', favoriteRoutes);
 
 export default app;
