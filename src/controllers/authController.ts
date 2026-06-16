@@ -25,10 +25,11 @@ const signToken = (id: string): string => {
 };
 
 const sendTokenCookie = (res: Response, token: string) => {
+  const isProd = process.env.NODE_ENV === 'production';
   res.cookie('jwt', token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    secure: isProd,                       // HTTPS only in prod
+    sameSite: isProd ? 'none' : 'lax',    // 'none' allows cross-domain in prod
     maxAge: 90 * 24 * 60 * 60 * 1000,
   });
 };
@@ -121,6 +122,12 @@ export const protect = async (req: Request, res: Response, next: NextFunction): 
 };
 
 export const logout = (req: Request, res: Response): void => {
-  res.cookie('jwt', '', { httpOnly: true, expires: new Date(0) });
+  const isProd = process.env.NODE_ENV === 'production';
+  res.cookie('jwt', '', {
+    httpOnly: true,
+    secure: isProd,
+    sameSite: isProd ? 'none' : 'lax',
+    expires: new Date(0),
+  });
   res.status(200).json({ status: 'success' });
 };

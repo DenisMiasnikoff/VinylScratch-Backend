@@ -7,7 +7,7 @@ import songRoutes from './routes/songRoutes';
 import playlistRoutes from "./routes/playlistRoutes";
 import favoriteRoutes from "./routes/favoriteRoutes";
 const app = express();
-
+app.set('trust proxy', 1);
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
